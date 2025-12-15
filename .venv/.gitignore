@@ -1,0 +1,14 @@
+# Виртуальное окружение
+venv/
+.venv/
+env/
+
+# Кэш Python
+__pycache__/
+*.py[cod]
+
+# База данных (SQLite, если вдруг появится)
+db.sqlite3
+
+# Папка настроек PyCharm
+.idea/
