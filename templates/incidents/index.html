@@ -1,0 +1,19 @@
+{% extends 'incidents/base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 border">
+    <div class="container-fluid py-5">
+      <h1 class="display-5 fw-bold">Система учета инцидентов ИБ</h1>
+      <p class="col-md-8 fs-4">Добро пожаловать в корпоративную систему управления инцидентами информационной безопасности.</p>
+      
+      {% if user.is_authenticated %}
+          <a href="{% url 'my_appeals' %}" class="btn btn-primary btn-lg">Мои обращения</a>
+      {% else %}
+          <p class="text-muted">Для начала работы необходимо авторизоваться.</p>
+          <a class="btn btn-success btn-lg" type="button">Войти в систему</a>
+      {% endif %}
+    </div>
+</div>
+{% endblock %}
