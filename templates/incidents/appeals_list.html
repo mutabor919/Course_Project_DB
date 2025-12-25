@@ -3,43 +3,82 @@
 {% block title %}Мои обращения{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <h2>📋 Мои обращения</h2>
-    <a href="{% url 'create_appeal' %}" class="btn btn-success">+ Создать заявку</a>
+<div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in">
+    <div>
+        <h2 class="fw-bold"><i class="fa-solid fa-clipboard-list me-2"></i>Список обращений</h2>
+        <p class="text-muted-light mb-0">Отслеживайте статус ваших заявок в реальном времени</p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <!-- Кнопка Бэкапа (Только Админ) -->
+        {% if user.role.name == 'Admin' %}
+            <a href="{% url 'trigger_backup' %}" class="btn btn-danger glass-card border-0" onclick="return confirm('Запустить бэкап?')">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+            </a>
+        {% endif %}
+
+        <!-- Экспорт и Архив (Персонал) -->
+        {% if user.role.name == 'Admin' or user.role.name == 'Staff' %}
+            <a href="{% url 'report_history' %}" class="btn btn-outline-light glass-card" title="Архив">
+                <i class="fa-solid fa-box-archive"></i>
+            </a>
+
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-outline-info glass-card dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fa-solid fa-download me-1"></i> Экспорт
+                </button>
+                <ul class="dropdown-menu dropdown-menu-dark glass-card border-0">
+                    <li><a class="dropdown-item" href="{% url 'export_csv' %}"><i class="fa-solid fa-file-csv me-2"></i>Excel (CSV)</a></li>
+                    <li><a class="dropdown-item" href="{% url 'export_json' %}"><i class="fa-solid fa-code me-2"></i>JSON</a></li>
+                    <li><hr class="dropdown-divider bg-light"></li>
+                    <li><a class="dropdown-item" href="{% url 'export_pdf' %}"><i class="fa-solid fa-file-pdf me-2"></i>PDF Отчет</a></li>
+                </ul>
+            </div>
+        {% endif %}
+
+        <a href="{% url 'create_appeal' %}" class="btn btn-primary rounded-pill px-4 shadow-lg">
+            <i class="fa-solid fa-plus me-2"></i>Новая заявка
+        </a>
+    </div>
 </div>
 
 {% if appeals %}
-    <div class="card shadow">
-        <div class="card-body">
-            <table class="table table-hover">
-                <thead class="table-light">
+    <div class="glass-card p-0 overflow-hidden shadow-lg animate-fade-in" style="animation-delay: 0.1s;">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0 align-middle">
+                <thead style="background: rgba(0,0,0,0.3);">
                     <tr>
-                        <th>ID</th>
-                        <th>Тема</th>
-                        <th>Категория</th>
-                        <th>Статус</th>
-                        <th>Дата</th>
+                        <th class="py-3 ps-4">ID</th>
+                        <th class="py-3">Тема</th>
+                        <th class="py-3">Категория</th>
+                        <th class="py-3">Статус</th>
+                        <th class="py-3">Дата</th>
                     </tr>
                 </thead>
                 <tbody>
                     {% for item in appeals %}
-                    <tr>
-                        <td>#{{ item.id }}</td>
-                        <td>{{ item.topic }}</td>
-                        <td>{{ item.category.name }}</td>
+                    <tr style="cursor: pointer;" onclick="window.location='{% url 'appeal_detail' item.id %}';">
+                        <td class="ps-4 text-muted-light">#{{ item.id }}</td>
+                        <td class="fw-bold text-white">
+                            {{ item.topic }}
+                        </td>
                         <td>
-                            <!-- Красивые бейджики для статусов -->
+                            <span class="badge rounded-pill bg-secondary bg-opacity-25 text-white border border-secondary border-opacity-25">
+                                {{ item.category.name }}
+                            </span>
+                        </td>
+                        <td>
                             {% if item.status.name == 'Новое' %}
-                                <span class="badge bg-primary">Новое</span>
+                                <span class="badge bg-primary bg-opacity-75"><i class="fa-solid fa-star me-1"></i>Новое</span>
                             {% elif item.status.name == 'В работе' %}
-                                <span class="badge bg-warning text-dark">В работе</span>
+                                <span class="badge bg-warning text-dark"><i class="fa-solid fa-screwdriver-wrench me-1"></i>В работе</span>
                             {% elif item.status.name == 'Закрыто' %}
-                                <span class="badge bg-success">Закрыто</span>
+                                <span class="badge bg-success bg-opacity-75"><i class="fa-solid fa-check me-1"></i>Закрыто</span>
                             {% else %}
                                 <span class="badge bg-secondary">{{ item.status.name }}</span>
                             {% endif %}
                         </td>
-                        <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
+                        <td class="text-muted-light small">{{ item.created_at|date:"d.m.Y" }} <br> {{ item.created_at|date:"H:i" }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
@@ -47,8 +86,10 @@
         </div>
     </div>
 {% else %}
-    <div class="alert alert-info">
-        У вас пока нет ни одного обращения. Создайте первое!
+    <div class="glass-card p-5 text-center">
+        <i class="fa-regular fa-folder-open fa-3x text-muted mb-3"></i>
+        <h4>Обращений пока нет</h4>
+        <p class="text-muted-light">Нажмите кнопку "Новая заявка", чтобы создать обращение.</p>
     </div>
 {% endif %}
 {% endblock %}

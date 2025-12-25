@@ -76,9 +76,9 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'course_db',           # Имя базы, которую мы только что создали в psql
-        'USER': 'postgres',            # Логин по умолчанию
-        'PASSWORD': '123',             # <--- Впиши пароль, который вводил в psql
+        'NAME': 'course_db',
+        'USER': 'postgres',
+        'PASSWORD': '123',
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -115,13 +115,22 @@ USE_I18N = True
 
 USE_TZ = True
 
-
-# Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
 
 AUTH_USER_MODEL = 'incidents.CustomUser'
 
-LOGIN_REDIRECT_URL = '/'  # После входа кидаем на главную
-LOGOUT_REDIRECT_URL = '/' # После выхода тоже на главную
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+PG_DUMP_PATH = r"D:\DB\bin\pg_dump.exe"
+
+BACKUP_ROOT = BASE_DIR / 'backups'
+
+YANDEX_DISK_TOKEN = "y0__xDN76_sBRjblgMgwfno5hXgnvtCptUBHuJUt5Gp_yIkGVBejA"
+
+MEDIA_URL = '/media/'
+
+# Физическая папка на диске
+MEDIA_ROOT = BASE_DIR / 'media'

@@ -3,20 +3,114 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}Система ИБ{% endblock %}</title>
-    <!-- Подключаем Bootstrap 5 (Стили) -->
+    <title>{% block title %}SUIB{% endblock %}</title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <style>
-        body { background-color: #f8f9fa; }
-        .card { box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        :root {
+            --primary-glow: #0d6efd;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+        }
+
+        body {
+            background: linear-gradient(-45deg, #020617, #1e293b, #0f172a, #172554);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            color: var(--text-main);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .glass-card {
+            background: var(--glass-bg) !important; /* Принудительно темный фон */
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+            color: white !important;
+        }
+
+        /* Исправляем выпадающие списки (Dropdown) */
+        .dropdown-menu {
+            background-color: rgba(30, 41, 59, 0.95) !important; /* Темно-синий фон */
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        .dropdown-item {
+            color: #e2e8f0 !important; /* Светлый текст */
+        }
+        .dropdown-item:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: #fff !important;
+        }
+
+        /* Навигация */
+        .navbar {
+            background: rgba(15, 23, 42, 0.9) !important;
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .navbar-brand { font-weight: 700; text-transform: uppercase; letter-spacing: 1px; }
+
+        /* Таблицы (чтобы текст был виден) */
+        .table {
+            --bs-table-color: #fff; /* Белый текст */
+            --bs-table-bg: transparent; /* Прозрачный фон */
+            --bs-table-border-color: rgba(255,255,255,0.1);
+            --bs-table-hover-bg: rgba(255,255,255,0.05);
+        }
+        .table thead th {
+            color: #60a5fa; /* Голубой заголовок */
+            border-bottom: 2px solid rgba(255,255,255,0.1);
+        }
+
+        /* Формы (Поля ввода) */
+        .form-control, .form-select {
+            background-color: rgba(0, 0, 0, 0.4) !important; /* Темный фон полей */
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #fff !important;
+            border-radius: 10px;
+        }
+        .form-control:focus, .form-select:focus {
+            background-color: rgba(0, 0, 0, 0.6) !important;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 0.25rem rgba(59, 130, 246, 0.25);
+        }
+        ::placeholder { color: rgba(255, 255, 255, 0.4) !important; }
+
+        /* Кнопки */
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #1d4ed8);
+            border: none;
+            box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+        }
+
+        h1, h2, h3, h4, h5 { color: white !important; }
+        .text-muted-light { color: #94a3b8 !important; }
     </style>
 </head>
 <body>
 
-<!-- Навигационная панель (Меню) -->
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+<!-- Навигация -->
+<nav class="navbar navbar-expand-lg navbar-dark mb-4 sticky-top">
   <div class="container">
-    <a class="navbar-brand" href="/">🛡️ Incidents.IB</a>
+    <a class="navbar-brand" href="/">
+        <i class="fa-solid fa-shield-halved me-2 text-primary"></i>SUIB
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarText">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -28,36 +122,49 @@
         </li>
       </ul>
 
-      <!-- Вот здесь мы оставили ТОЛЬКО правильный блок -->
       <span class="navbar-text">
         {% if user.is_authenticated %}
-            <!-- Если вошел: Показываем имя, роль и кнопку Выход -->
             <span class="text-light me-3">
-                👤 {{ user.fio|default:user.username }}
-                <span class="badge bg-secondary">{{ user.role.name|default:"Роль не назначена" }}</span>
+                <i class="fa-solid fa-user-astronaut me-1"></i>
+                {{ user.fio|default:user.username }}
+                <span class="badge bg-primary bg-opacity-75 ms-1">{{ user.role.name|default:"Role" }}</span>
             </span>
 
             <form action="{% url 'logout' %}" method="post" class="d-inline">
                 {% csrf_token %}
-                <button type="submit" class="btn btn-outline-light btn-sm">Выйти</button>
+                <button type="submit" class="btn btn-outline-light btn-sm rounded-pill px-3">
+                    <i class="fa-solid fa-right-from-bracket"></i> Выйти
+                </button>
             </form>
         {% else %}
-            <!-- Если гость: Кнопка Войти -->
-            <a href="{% url 'login' %}" class="btn btn-primary btn-sm">Войти</a>
+            <a href="{% url 'login' %}" class="btn btn-primary btn-sm rounded-pill px-3">
+                <i class="fa-solid fa-right-to-bracket"></i> Войти
+            </a>
         {% endif %}
       </span>
-
     </div>
   </div>
 </nav>
 
-<!-- Основной контент страницы -->
+<!-- Контент -->
 <div class="container">
+    <!-- Блок уведомлений -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }} glass-card text-white border-0 alert-dismissible fade show mt-3" role="alert">
+                {% if message.tags == 'success' %}<i class="fa-solid fa-check-circle me-2"></i>{% endif %}
+                {% if message.tags == 'error' or message.tags == 'danger' %}<i class="fa-solid fa-circle-exclamation me-2"></i>{% endif %}
+                {{ message }}
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="alert"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
     {% block content %}
     {% endblock %}
 </div>
 
-<!-- Подключаем Bootstrap JS (для работы кнопок и меню) -->
+<!-- Скрипты -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,0 +1,166 @@
+{% extends 'incidents/base.html' %}
+
+{% block title %}Заявка #{{ appeal.id }}{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <a href="{% url 'my_appeals' %}" class="btn btn-outline-light btn-sm rounded-pill px-3">
+        <i class="fa-solid fa-arrow-left me-2"></i>Назад
+    </a>
+</div>
+
+<div class="row animate-fade-in">
+    <!-- ЛЕВАЯ КОЛОНКА: Инфо -->
+    <div class="col-lg-4 mb-4">
+        <div class="glass-card p-4 h-100">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <span class="badge bg-secondary bg-opacity-25 border border-secondary border-opacity-25 text-white">ID #{{ appeal.id }}</span>
+                <span class="text-muted-light small"><i class="fa-regular fa-clock me-1"></i>{{ appeal.created_at|date:"d.m.Y H:i" }}</span>
+            </div>
+
+            <h4 class="fw-bold mb-4">{{ appeal.topic }}</h4>
+
+            <div class="vstack gap-3">
+                <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-25 pb-2">
+                    <span class="text-muted-light">Статус:</span>
+                    <div>
+                        {% if appeal.status.name == 'Новое' %}
+                            <span class="badge bg-primary bg-opacity-75">Новое</span>
+                        {% elif appeal.status.name == 'В работе' %}
+                            <span class="badge bg-warning text-dark">В работе</span>
+                        {% elif appeal.status.name == 'Закрыто' %}
+                            <span class="badge bg-success bg-opacity-75">Закрыто</span>
+                        {% else %}
+                            <span class="badge bg-secondary">{{ appeal.status.name }}</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-25 pb-2">
+                    <span class="text-muted-light">Категория:</span>
+                    <span class="fw-bold">{{ appeal.category.name }}</span>
+                </div>
+
+                <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-25 pb-2">
+                    <span class="text-muted-light">Приоритет:</span>
+                    <span class="fw-bold {% if appeal.priority.level == 'Критический' %}text-danger{% endif %}">
+                        {{ appeal.priority.level }}
+                    </span>
+                </div>
+
+                <div class="d-flex justify-content-between border-bottom border-secondary border-opacity-25 pb-2">
+                    <span class="text-muted-light">Заявитель:</span>
+                    <span>{{ appeal.applicant.fio }}</span>
+                </div>
+            </div>
+
+            <div class="mt-4">
+                <label class="text-info small text-uppercase fw-bold mb-2">Описание:</label>
+                <div class="p-3 rounded-3" style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);">
+                    {{ appeal.description|linebreaks }}
+                </div>
+            </div>
+
+            <!-- ПАНЕЛЬ СОТРУДНИКА -->
+            {% if user.role.name == 'Staff' or user.role.name == 'Admin' %}
+                <div class="mt-4 pt-3 border-top border-secondary border-opacity-50">
+                    <h6 class="text-warning mb-3"><i class="fa-solid fa-bolt me-2"></i>Действия:</h6>
+                    <div class="d-grid gap-2">
+                        {% if appeal.status.name == 'Новое' %}
+                            <a href="{% url 'take_appeal' appeal.id %}" class="btn btn-warning text-dark fw-bold">
+                                🛠 Взять в работу
+                            </a>
+                        {% endif %}
+                        {% if appeal.status.name == 'В работе' %}
+                            <a href="{% url 'close_appeal' appeal.id %}" class="btn btn-success fw-bold" onclick="return confirm('Закрыть заявку?')">
+                                ✅ Закрыть заявку
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- ПРАВАЯ КОЛОНКА: Чат -->
+    <div class="col-lg-8">
+        <div class="glass-card p-0 overflow-hidden d-flex flex-column" style="height: 600px;">
+            <div class="p-3 bg-black bg-opacity-25 border-bottom border-secondary border-opacity-25">
+                <h5 class="mb-0"><i class="fa-regular fa-comments me-2"></i>Обсуждение</h5>
+            </div>
+
+            <!-- Область сообщений -->
+            <div class="card-body p-4 flex-grow-1" style="overflow-y: auto; scrollbar-width: thin;">
+                {% if appeal.comments.all %}
+                    {% for comment in appeal.comments.all %}
+                        <div class="d-flex flex-column mb-3 {% if comment.author == user %}align-items-end{% else %}align-items-start{% endif %}">
+                            <div class="d-flex align-items-center mb-1 small text-muted-light gap-2">
+                                <strong>{{ comment.author.fio|default:comment.author.username }}</strong>
+                                <span>{{ comment.created_at|date:"H:i" }}</span>
+                            </div>
+                            <div class="p-3 rounded-4 text-white shadow-sm"
+                                 style="max-width: 80%;
+                                        background: {% if comment.author == user %}linear-gradient(135deg, #2563eb, #1e40af){% else %}rgba(255,255,255,0.1){% endif %};
+                                        {% if comment.author == user %}border-bottom-right-radius: 2px;{% else %}border-bottom-left-radius: 2px;{% endif %}">
+                                {{ comment.text|linebreaksbr }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center mt-5 text-muted-light">
+                        <i class="fa-regular fa-paper-plane fa-3x mb-3 opacity-50"></i>
+                        <p>Напишите первое сообщение...</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Форма отправки -->
+            <div class="p-3 bg-black bg-opacity-25 border-top border-secondary border-opacity-25">
+                <form method="post" class="d-flex gap-2">
+                    {% csrf_token %}
+                    <div class="flex-grow-1">
+                        {{ form.text }}
+                    </div>
+                    <button class="btn btn-primary rounded-circle shadow p-0 d-flex align-items-center justify-content-center" style="width: 45px; height: 45px;" type="submit">
+                        <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ИСТОРИЯ (LOGS) -->
+{% if user.role.name == 'Staff' or user.role.name == 'Admin' %}
+<div class="row mt-4 mb-5">
+    <div class="col-12">
+        <div class="glass-card p-4">
+            <h5 class="mb-3 text-muted-light"><i class="fa-solid fa-clock-rotate-left me-2"></i>История изменений</h5>
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Время</th>
+                            <th>Пользователь</th>
+                            <th>Действие</th>
+                            <th>Детали</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr>
+                            <td class="text-info">{{ log.timestamp|date:"d.m.Y H:i:s" }}</td>
+                            <td>{{ log.user.fio }}</td>
+                            <td><span class="badge bg-secondary bg-opacity-25 border border-secondary">{{ log.action_type }}</span></td>
+                            <td class="text-muted-light">{{ log.description }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock %}

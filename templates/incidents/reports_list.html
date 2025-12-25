@@ -1,0 +1,59 @@
+{% extends 'incidents/base.html' %}
+
+{% block title %}Архив отчетов{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4 animate-fade-in">
+    <h2 class="fw-bold"><i class="fa-solid fa-server me-2"></i>Архив отчетов</h2>
+    <a href="{% url 'my_appeals' %}" class="btn btn-outline-light rounded-pill px-4">
+        <i class="fa-solid fa-arrow-left me-2"></i>К заявкам
+    </a>
+</div>
+
+<div class="glass-card p-0 overflow-hidden shadow-lg animate-fade-in" style="animation-delay: 0.1s;">
+    <div class="table-responsive">
+        {% if reports %}
+        <table class="table table-hover mb-0 align-middle">
+            <thead style="background: rgba(0,0,0,0.3);">
+                <tr>
+                    <th class="py-3 ps-4">Дата</th>
+                    <th class="py-3">Инициатор</th>
+                    <th class="py-3">Тип</th>
+                    <th class="py-3">Статистика</th>
+                    <th class="py-3 pe-4 text-end">Действие</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in reports %}
+                <tr>
+                    <td class="ps-4">{{ item.created_at|date:"d.m.Y H:i" }}</td>
+                    <td>
+                        <div class="d-flex align-items-center">
+                            <div class="bg-secondary bg-opacity-25 rounded-circle p-2 me-2">
+                                <i class="fa-solid fa-user-tie text-info"></i>
+                            </div>
+                            {{ item.initiator.fio }}
+                        </div>
+                    </td>
+                    <td>
+                        <span class="badge bg-danger bg-opacity-75"><i class="fa-solid fa-file-pdf me-1"></i>{{ item.report_type }}</span>
+                    </td>
+                    <td class="text-muted-light">Обращений: <b>{{ item.appeal_count }}</b></td>
+                    <td class="pe-4 text-end">
+                        <a href="{{ item.file_path.url }}" class="btn btn-sm btn-light rounded-pill px-3 fw-bold" target="_blank">
+                            <i class="fa-solid fa-download me-2"></i>Скачать
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div class="p-5 text-center">
+                <i class="fa-solid fa-box-open fa-3x text-muted opacity-50 mb-3"></i>
+                <h5 class="text-muted-light">Архив пуст</h5>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

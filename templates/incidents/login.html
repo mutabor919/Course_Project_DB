@@ -3,39 +3,45 @@
 {% block title %}Вход в систему{% endblock %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
+<div class="row justify-content-center align-items-center" style="min-height: 80vh;">
     <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4 class="mb-0">Авторизация</h4>
+        <!-- Стеклянная карточка -->
+        <div class="glass-card p-4 animate-fade-in">
+            <div class="text-center mb-4">
+                <i class="fa-solid fa-circle-user fa-4x text-primary mb-3"></i>
+                <h3 class="fw-bold">Авторизация</h3>
+                <p class="text-muted-light small">Введите учетные данные для доступа</p>
             </div>
-            <div class="card-body p-4">
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% if form.errors %}
-                        <div class="alert alert-danger py-2">
-                            Неверный логин или пароль!
-                        </div>
-                    {% endif %}
 
-                    <div class="mb-3">
-                        <label for="id_username" class="form-label">Логин</label>
-                        <input type="text" name="username" class="form-control" id="id_username" required autofocus>
-                    </div>
+            <form method="post">
+                {% csrf_token %}
 
-                    <div class="mb-3">
-                        <label for="id_password" class="form-label">Пароль</label>
-                        <input type="password" name="password" class="form-control" id="id_password" required>
+                {% if form.errors %}
+                    <div class="alert alert-danger glass-card border-0 text-white py-2 mb-3">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i>Неверный логин или пароль!
                     </div>
+                {% endif %}
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary">Войти</button>
-                    </div>
-                </form>
-            </div>
-            <div class="card-footer text-center text-muted">
-                <small>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></small>
+                <div class="mb-3">
+                    <label class="form-label text-muted-light"><i class="fa-solid fa-user me-2"></i>Логин</label>
+                    <input type="text" name="username" class="form-control py-2" required autofocus placeholder="username">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label text-muted-light"><i class="fa-solid fa-key me-2"></i>Пароль</label>
+                    <input type="password" name="password" class="form-control py-2" required placeholder="••••••••">
+                </div>
+
+                <div class="d-grid gap-2">
+                    <button type="submit" class="btn btn-primary btn-lg rounded-pill fw-bold">
+                        Войти <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
+
+            <div class="text-center mt-4">
+                <small class="text-muted-light">Нет аккаунта?</small>
+                <a href="{% url 'register' %}" class="text-info fw-bold ms-1">Зарегистрироваться</a>
             </div>
         </div>
     </div>

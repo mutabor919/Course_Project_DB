@@ -60,7 +60,7 @@ class Category(models.Model):
         verbose_name_plural = "Категории"
 
 
-# 5. Приоритет (Priority) - УБРАЛИ weight
+# 5. Приоритет (Priority)
 class Priority(models.Model):
     level = models.CharField("Уровень приоритета", max_length=50)
     description = models.TextField("Описание", blank=True)

@@ -4,7 +4,6 @@ from .models import (
     Appeal, Assignment, ActionLog, BackupLog, Report, Comment
 )
 
-# Регистрация моделей в админке
 admin.site.register(Role)
 admin.site.register(Department)
 admin.site.register(CustomUser)
